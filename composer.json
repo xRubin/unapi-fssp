@@ -1,7 +1,7 @@
 {
   "name": "unapi/fssp",
   "description": "Unapi http://fssprus.ru service wrapper",
-  "keywords": ["unapi", "guzzle", "promise", "fssp", "http://fssprus.ru"],
+  "keywords": ["unapi", "guzzle", "promise", "fssp"],
   "type": "library",
   "minimum-stability": "stable",
   "require": {
