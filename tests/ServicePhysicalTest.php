@@ -39,9 +39,9 @@ class ServicePhysicalTest extends TestCase
 
         /** @var Execution[] $executions */
         $executions = $service->getExecutions(new Request(67, new FullName('Анжелика', 'Гинзбург', 'Иосифовна')))->wait();
+
         $this->assertInternalType('array', $executions);
         $this->assertCount(2, $executions);
-
         $this->assertEquals(new Execution(
             'ГИНЗБУРГ АНЖЕЛИКА ИОСИФОВНА 13.12.1971 , РОССИЯ, , , Г. СМОЛЕНСК, , , , ,',
             '65478/15/67032-ИП от 12.10.2015',
