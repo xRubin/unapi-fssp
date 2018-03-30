@@ -1,6 +1,6 @@
 <?php
 
-namespace unapi\fssp\physical;
+namespace unapi\fssp\byDocument;
 
 use GuzzleHttp\Promise\PromiseInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -34,14 +34,15 @@ class Service extends \unapi\fssp\common\Service
                 'system' => 'ip',
                 'is' => [
                     'extended' => 1,
-                    'variant' => 1,
+                    'variant' => 4,
                     'region_id' => [
-                        0 => $request->getRegionKey()
+                        0 => 77
                     ],
-                    'last_name' => $request->getFullName()->getSurname(),
-                    'first_name' => $request->getFullName()->getName(),
-                    'patronymic' => $request->getFullName()->getPatronymic(),
-                    'date' => $request->getBirthdate() ? $request->getBirthdate()->format('d.m.Y') : null,
+                    'id_number' => $request->getExecutionDocument(),
+                    'id_type' => [
+                        0 => null
+                    ],
+                    'id_issuer' => null,
                 ],
                 'nocache' => 1,
                 '_' => '1444115160353',

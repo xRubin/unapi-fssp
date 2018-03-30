@@ -1,8 +1,8 @@
 <?php
 
-namespace unapi\fssp\physical;
+namespace unapi\fssp\common;
 
-class ResponseExecution implements ResponseExecutionInterface
+class Execution implements ExecutionInterface
 {
     /** @var string */
     private $debtor;
@@ -38,6 +38,21 @@ class ResponseExecution implements ResponseExecutionInterface
         $this->reason = $reason;
         $this->executionDepartment = $executionDepartment;
         $this->executionJudge = $executionJudge;
+    }
+
+    /**
+     * @param string $debtor
+     * @param string $proceeding
+     * @param string $proceedingDocument
+     * @param string $finishReason
+     * @param string $reason
+     * @param string $executionDepartment
+     * @param string $executionJudge
+     * @return ExecutionInterface
+     */
+    public static function toDto(string $debtor, string $proceeding, string $proceedingDocument, string $finishReason, string $reason, string $executionDepartment, string $executionJudge): ExecutionInterface
+    {
+        return new self($debtor, $proceeding, $proceedingDocument, $finishReason, $reason, $executionDepartment, $executionJudge);
     }
 
     /**

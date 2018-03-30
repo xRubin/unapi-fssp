@@ -3,6 +3,10 @@
 namespace unapi\fssp\common;
 
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Promise\FulfilledPromise;
+use GuzzleHttp\Promise\PromiseInterface;
+use GuzzleHttp\Promise\RejectedPromise;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -17,6 +21,11 @@ abstract class Service implements ServiceInterface, LoggerAwareInterface
     private $anticaptcha;
     /** @var LoggerInterface */
     private $logger;
+    /** @var string */
+    private $responseClass = Execution::class;
+
+    protected const URL = 'https://fssprus.ru/iss/ip/';
+    protected const AJAX_URL = 'http://is.fssprus.ru/ajax_search';
 
     /**
      * @param array $config Service configuration settings.
@@ -46,6 +55,9 @@ abstract class Service implements ServiceInterface, LoggerAwareInterface
         } else {
             throw new \InvalidArgumentException('Anticaptcha must be instance of AnticaptchaInterface');
         }
+
+        if (isset($config['responseClass']))
+            $this->responseClass = $config['responseClass'];
     }
 
     /**
@@ -69,5 +81,54 @@ abstract class Service implements ServiceInterface, LoggerAwareInterface
     public function getAnticaptcha(): AnticaptchaInterface
     {
         return $this->anticaptcha;
+    }
+
+    /**
+     * @param ClientInterface $client
+     * @return PromiseInterface
+     */
+    protected function initialPage(ClientInterface $client)
+    {
+        return $client->requestAsync('GET', self::URL);
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @return PromiseInterface
+     */
+    protected function parseResponse(ResponseInterface $response): PromiseInterface
+    {
+        $body = $response->getBody()->getContents();
+
+        if (!preg_match("/(.*)Найдено записей: <b>(\d*)<\/b>(.*)/is", $body, $matches))
+            return new FulfilledPromise([]);
+
+        if (!preg_match('/jQuery17207971608308143914_1444115108291\((.*)\);/is', $body, $matches))
+            return new RejectedPromise('Parse error');
+
+        $response = json_decode($matches[1]);
+
+        if (!$response->data)
+            return new RejectedPromise('Parse error');
+
+        $result = [];
+        $dom = new \DOMDocument;
+        $dom->loadHTML(mb_convert_encoding($response->data, 'HTML-ENTITIES', "UTF-8"));
+        $responseClass = $this->responseClass;
+
+        foreach ($dom->getElementsByTagName('tr') as $execution) {
+            /** @var \DOMElement $execution */
+            if ($columns = $execution->getElementsByTagName('td')) {
+                $data = [];
+                foreach ($columns as $column) {
+                    /** @var \DOMElement $column */
+                    $data[] = $column->textContent;
+                }
+                if (count($data) === 8)
+                    $result[] = $responseClass::toDto($data[0], $data[1], $data[2], $data[3], $data[5], $data[6], $data[7]);
+            }
+        }
+
+        return new FulfilledPromise($result);
     }
 }

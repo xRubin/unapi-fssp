@@ -1,8 +1,8 @@
 <?php
 
-namespace unapi\fssp\physical;
+namespace unapi\fssp\common;
 
-interface ResponseExecutionInterface
+interface ExecutionInterface
 {
     /**
      * @return string
@@ -38,4 +38,16 @@ interface ResponseExecutionInterface
      * @return string
      */
     public function getExecutionJudge(): string;
+
+    /**
+     * @param string $debtor
+     * @param string $proceeding
+     * @param string $proceedingDocument
+     * @param string $finishReason
+     * @param string $reason
+     * @param string $executionDepartment
+     * @param string $executionJudge
+     * @return ExecutionInterface
+     */
+    public static function toDto(string $debtor, string $proceeding, string $proceedingDocument, string $finishReason, string $reason, string $executionDepartment, string $executionJudge): ExecutionInterface;
 }

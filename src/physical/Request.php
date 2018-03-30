@@ -15,7 +15,6 @@ class Request implements RequestInterface
     private $birthDate;
 
     /**
-     * RequestDto constructor.
      * @param string $regionKey
      * @param FullName $fullName
      * @param \DateTimeInterface $birthDate
@@ -37,9 +36,9 @@ class Request implements RequestInterface
 
     /**
      * @param string $regionKey
-     * @return Request
+     * @return RequestInterface
      */
-    public function setRegionKey(string $regionKey): Request
+    public function setRegionKey(string $regionKey): RequestInterface
     {
         $this->regionKey = $regionKey;
         return $this;
@@ -55,9 +54,9 @@ class Request implements RequestInterface
 
     /**
      * @param FullName $fullName
-     * @return Request
+     * @return RequestInterface
      */
-    public function setFullName(FullName $fullName): Request
+    public function setFullName(FullName $fullName): RequestInterface
     {
         $this->fullName = $fullName;
         return $this;
@@ -73,9 +72,9 @@ class Request implements RequestInterface
 
     /**
      * @param DateTimeInterface $birthDate
-     * @return Request
+     * @return RequestInterface
      */
-    public function setBirthDate(DateTimeInterface $birthDate): Request
+    public function setBirthDate(DateTimeInterface $birthDate): RequestInterface
     {
         $this->birthDate = $birthDate;
         return $this;
