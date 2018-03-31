@@ -1,11 +1,11 @@
 <?php
 
-namespace unapi\fssp\physical;
+namespace unapi\fssp\ip\requests;
 
 use unapi\helper\fullname\FullName;
 use DateTimeInterface;
 
-class Request implements RequestInterface
+class ByIndividualRequest implements ByIndividualRequestInterface
 {
     /** @var string */
     private $regionKey;
@@ -35,16 +35,6 @@ class Request implements RequestInterface
     }
 
     /**
-     * @param string $regionKey
-     * @return RequestInterface
-     */
-    public function setRegionKey(string $regionKey): RequestInterface
-    {
-        $this->regionKey = $regionKey;
-        return $this;
-    }
-
-    /**
      * @return FullName
      */
     public function getFullName(): FullName
@@ -53,30 +43,10 @@ class Request implements RequestInterface
     }
 
     /**
-     * @param FullName $fullName
-     * @return RequestInterface
-     */
-    public function setFullName(FullName $fullName): RequestInterface
-    {
-        $this->fullName = $fullName;
-        return $this;
-    }
-
-    /**
      * @return DateTimeInterface
      */
     public function getBirthDate(): ?DateTimeInterface
     {
         return $this->birthDate;
-    }
-
-    /**
-     * @param DateTimeInterface $birthDate
-     * @return RequestInterface
-     */
-    public function setBirthDate(DateTimeInterface $birthDate): RequestInterface
-    {
-        $this->birthDate = $birthDate;
-        return $this;
     }
 }

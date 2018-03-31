@@ -1,8 +1,8 @@
 <?php
 
-namespace unapi\fssp\byExecution;
+namespace unapi\fssp\ip\requests;
 
-class Request implements RequestInterface
+class ByExecutionRequest implements ByExecutionRequestInterface
 {
     /** @var string */
     private $executionNumber;
@@ -21,15 +21,5 @@ class Request implements RequestInterface
     public function getExecutionNumber(): string
     {
         return $this->executionNumber;
-    }
-
-    /**
-     * @param string $executionNumber
-     * @return RequestInterface
-     */
-    public function setRegionKey(string $executionNumber): RequestInterface
-    {
-        $this->executionNumber = $executionNumber;
-        return $this;
     }
 }

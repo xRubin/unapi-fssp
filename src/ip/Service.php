@@ -1,6 +1,6 @@
 <?php
 
-namespace unapi\fssp\common;
+namespace unapi\fssp\ip;
 
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Promise\FulfilledPromise;
@@ -11,9 +11,12 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use unapi\anticaptcha\common\AnticaptchaInterface;
+use unapi\anticaptcha\common\dto\CaptchaSolvedInterface;
+use unapi\fssp\common\Client;
+use unapi\fssp\ip\requests\RequestInterface;
 use unapi\interfaces\ServiceInterface;
 
-abstract class Service implements ServiceInterface, LoggerAwareInterface
+class Service implements ServiceInterface, LoggerAwareInterface
 {
     /** @var Client */
     private $client;
@@ -75,6 +78,7 @@ abstract class Service implements ServiceInterface, LoggerAwareInterface
     {
         return $this->client;
     }
+
     /**
      * @return AnticaptchaInterface
      */
@@ -84,12 +88,48 @@ abstract class Service implements ServiceInterface, LoggerAwareInterface
     }
 
     /**
+     * @param RequestInterface $request
+     * @return PromiseInterface
+     */
+    public function findExecutions(RequestInterface $request): PromiseInterface
+    {
+        return $this->initialPage($this->getClient())->then(function () use ($request) {
+            return $this->submitForm($request);
+        })->then(function (ResponseInterface $response) {
+            return $this->getAnticaptcha()->getAnticaptchaPromise($this->getClient(), $response);
+        })->then(function (CaptchaSolvedInterface $solved) use ($request) {
+            return $this->submitForm($request, $solved);
+        })->then(function (ResponseInterface $response) {
+            return $this->parseResponse($response);
+        });
+    }
+
+    /**
      * @param ClientInterface $client
      * @return PromiseInterface
      */
     protected function initialPage(ClientInterface $client)
     {
         return $client->requestAsync('GET', self::URL);
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @param CaptchaSolvedInterface|null $captcha
+     * @return PromiseInterface
+     */
+    protected function submitForm(RequestInterface $request, CaptchaSolvedInterface $captcha = null): PromiseInterface
+    {
+        return $this->getClient()->requestAsync('GET', self::AJAX_URL, [
+            'query' => [
+                'callback' => 'jQuery17207971608308143914_1444115108291',
+                'system' => 'ip',
+                'is' => FormFactory::getForm($request),
+                'nocache' => 1,
+                '_' => '1444115160353',
+                'code' => $captcha ? $captcha->getCode() : null,
+            ]
+        ]);
     }
 
     /**
@@ -122,7 +162,9 @@ abstract class Service implements ServiceInterface, LoggerAwareInterface
                 $data = [];
                 foreach ($columns as $column) {
                     /** @var \DOMElement $column */
-                    $data[] = $column->textContent;
+                    $data[] = implode(PHP_EOL, array_filter(
+                        array_map('trim', explode(PHP_EOL, preg_replace('/\<br(\s*)?\/?\>/i', PHP_EOL, $this->getDomElementHtml($column))))
+                    ));
                 }
                 if (count($data) === 8)
                     $result[] = $responseClass::toDto($data[0], $data[1], $data[2], $data[3], $data[5], $data[6], $data[7]);
@@ -130,5 +172,18 @@ abstract class Service implements ServiceInterface, LoggerAwareInterface
         }
 
         return new FulfilledPromise($result);
+    }
+
+    /**
+     * @param \DOMElement $element
+     * @return string
+     */
+    private function getDomElementHtml(\DOMElement $element): string
+    {
+        $innerHTML = '';
+        foreach ($element->childNodes as $child) {
+            $innerHTML .= $element->ownerDocument->saveHTML($child);
+        }
+        return $innerHTML;
     }
 }

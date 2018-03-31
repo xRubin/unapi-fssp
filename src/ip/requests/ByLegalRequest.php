@@ -1,8 +1,8 @@
 <?php
 
-namespace unapi\fssp\legal;
+namespace unapi\fssp\ip\requests;
 
-class Request implements RequestInterface
+class ByLegalRequest implements ByLegalRequestInterface
 {
     /** @var string */
     private $regionKey;
@@ -14,6 +14,7 @@ class Request implements RequestInterface
     /**
      * @param string $regionKey
      * @param string $name
+     * @param string|null $address
      */
     public function __construct(string $regionKey, string $name, string $address = null)
     {
@@ -30,16 +31,6 @@ class Request implements RequestInterface
     }
 
     /**
-     * @param string $regionKey
-     * @return RequestInterface
-     */
-    public function setRegionKey(string $regionKey): RequestInterface
-    {
-        $this->regionKey = $regionKey;
-        return $this;
-    }
-
-    /**
      * @return string
      */
     public function getName(): string
@@ -48,30 +39,10 @@ class Request implements RequestInterface
     }
 
     /**
-     * @param string $name
-     * @return RequestInterface
-     */
-    public function setName(string $name): RequestInterface
-    {
-        $this->name = $name;
-        return $this;
-    }
-
-    /**
      * @return null|string
      */
     public function getAddress(): ?string
     {
         return $this->name;
-    }
-
-    /**
-     * @param string $address
-     * @return RequestInterface
-     */
-    public function setAddress(string $address): RequestInterface
-    {
-        $this->address = $address;
-        return $this;
     }
 }

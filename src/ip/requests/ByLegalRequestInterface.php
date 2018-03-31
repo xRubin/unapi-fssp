@@ -1,8 +1,8 @@
 <?php
 
-namespace unapi\fssp\legal;
+namespace unapi\fssp\ip\requests;
 
-interface RequestInterface
+interface ByLegalRequestInterface extends RequestInterface
 {
     /**
      * @return string

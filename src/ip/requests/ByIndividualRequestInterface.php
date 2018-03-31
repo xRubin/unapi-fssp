@@ -1,11 +1,11 @@
 <?php
 
-namespace unapi\fssp\physical;
+namespace unapi\fssp\ip\requests;
 
 use unapi\helper\fullname\FullName;
 use DateTimeInterface;
 
-interface RequestInterface
+interface ByIndividualRequestInterface extends RequestInterface
 {
     /**
      * @return string

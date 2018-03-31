@@ -1,6 +1,6 @@
 <?php
 
-namespace unapi\fssp\common;
+namespace unapi\fssp\ip;
 
 class RegionSelector
 {
