@@ -18,11 +18,11 @@ $service = new Service([
 ```
 
 ### Поиск исполнительных производств по физику
-Сервис требует указания региона для поиска.
-
-Справочник регионов есть в [unapi\fssp\ip\RegionSelector](https://github.com/xRubin/unapi-fssp/blob/master/src/ip/RegionSelector.php).
+Сервис требует указания региона для поиска. Справочник регионов есть в [unapi\fssp\ip\RegionSelector](https://github.com/xRubin/unapi-fssp/blob/master/src/ip/RegionSelector.php).
 
 ```php
+use unapi\helper\fullname\FullName;
+
 /** @var Execution[] $executions */
 $executions = $service->findExecutions(
   new requests\ByIndividualRequest(67, new FullName('Анжелика', 'Гинзбург', 'Иосифовна'))
